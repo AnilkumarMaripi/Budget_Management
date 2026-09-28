@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import WebGLFluidShader from '../components/WebGLFluidShader';
-import { loginUser, registerUser, isValidEmail, getSession } from '../lib/auth';
+import { loginUser, registerUser, isValidEmail, getSession, saveSession } from '../lib/auth';
 import { SUPPORTED_CURRENCIES, detectAutoCurrency, fetchGeoIPCurrency, saveUserCurrency, formatMoney } from '../lib/currency';
+import { signInWithFirebaseGoogle, signInWithFirebaseEmail, registerWithFirebaseEmail } from '../lib/firebase';
 
 
 export default function Login({ defaultTab = 'signin' }) {
@@ -119,8 +120,8 @@ export default function Login({ defaultTab = 'signin' }) {
 
   const strengthInfo = getStrengthLabel();
 
-  // Login Submit Handler
-  const handleLoginSubmit = (e) => {
+  // Login Submit Handler (Firebase Auth with local fallback)
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -136,6 +137,20 @@ export default function Login({ defaultTab = 'signin' }) {
 
     setLoading(true);
 
+    try {
+      // Try Firebase Auth first
+      const fbResult = await signInWithFirebaseEmail(email, password);
+      if (fbResult.success) {
+        setLoading(false);
+        saveSession(fbResult.user, rememberMe);
+        navigate('/onboarding');
+        return;
+      }
+    } catch (err) {
+      console.warn("Firebase email auth fallback:", err);
+    }
+
+    // Local Fallback
     setTimeout(() => {
       const result = loginUser(email, password, rememberMe);
       setLoading(false);
@@ -145,11 +160,11 @@ export default function Login({ defaultTab = 'signin' }) {
       } else {
         triggerErrorShake(result.error || 'Authentication failed');
       }
-    }, 600);
+    }, 400);
   };
 
-  // Sign Up Submit Handler
-  const handleSignUpSubmit = (e) => {
+  // Sign Up Submit Handler (Firebase Auth with local fallback)
+  const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -170,6 +185,22 @@ export default function Login({ defaultTab = 'signin' }) {
 
     setLoading(true);
 
+    try {
+      const fbResult = await registerWithFirebaseEmail(email, password, name);
+      if (fbResult.success) {
+        setLoading(false);
+        setSuccess(true);
+        saveSession(fbResult.user, rememberMe);
+        setTimeout(() => {
+          navigate('/onboarding');
+        }, 1000);
+        return;
+      }
+    } catch (err) {
+      console.warn("Firebase email register fallback:", err);
+    }
+
+    // Local Fallback
     setTimeout(() => {
       const res = registerUser(email, password, name);
       
@@ -183,11 +214,28 @@ export default function Login({ defaultTab = 'signin' }) {
         setLoading(false);
         triggerErrorShake(res.error || 'Failed to create account');
       }
-    }, 1000);
+    }, 800);
   };
 
-  const handleSocialAuth = (provider) => {
+  // Social Auth Handler (Google Firebase Popup)
+  const handleSocialAuth = async (provider) => {
     setLoading(true);
+
+    if (provider === 'Google') {
+      try {
+        const res = await signInWithFirebaseGoogle();
+        if (res.success) {
+          setLoading(false);
+          saveSession(res.user, rememberMe);
+          navigate('/onboarding');
+          return;
+        }
+      } catch (err) {
+        console.warn("Firebase Google Auth fallback to demo:", err);
+      }
+    }
+
+    // Demo/Passkey/Apple Fallback
     setTimeout(() => {
       const demoEmail = `${provider.toLowerCase()}_user_${Date.now().toString().slice(-4)}@domain.com`;
       let result;
