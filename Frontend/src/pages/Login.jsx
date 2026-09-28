@@ -141,11 +141,7 @@ export default function Login({ defaultTab = 'signin' }) {
       setLoading(false);
 
       if (result.success) {
-        if (result.user.onboardingComplete === false) {
-          navigate('/onboarding');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/onboarding');
       } else {
         triggerErrorShake(result.error || 'Authentication failed');
       }
@@ -203,7 +199,7 @@ export default function Login({ defaultTab = 'signin' }) {
       setLoading(false);
       
       if (result.success) {
-        navigate('/dashboard');
+        navigate('/onboarding');
       } else {
         triggerErrorShake(result.error || 'Authentication failed');
       }
