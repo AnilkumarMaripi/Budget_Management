@@ -160,40 +160,6 @@ export default function Dashboard() {
             </span>
           </button>
 
-          {/* Location Currency Badge Selector */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setIsCurrencyOpen(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e6f7f5] dark:bg-[#005049]/40 text-[#00685f] dark:text-[#6bd8cb] text-xs font-bold cursor-pointer"
-            >
-              <span>{currency.flag}</span>
-              <span>{currency.code} ({currency.symbol})</span>
-              <span className="material-symbols-outlined text-[14px]">expand_more</span>
-            </button>
-
-            {isCurrencyOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1e2326] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 py-1.5 z-50 animate-fadeIn max-h-60 overflow-y-auto">
-                <div className="px-3 py-1 text-[0.65rem] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
-                  Select Currency
-                </div>
-                {SUPPORTED_CURRENCIES.map(c => (
-                  <button
-                    key={c.code}
-                    type="button"
-                    onClick={() => handleCurrencySelect(c)}
-                    className={`w-full text-left px-3 py-2 text-xs font-semibold flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                      currency.code === c.code ? 'text-[#00685f] dark:text-[#6bd8cb] font-bold' : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    <span>{c.flag} {c.code}</span>
-                    <span className="font-mono text-gray-400">{c.symbol}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* User Profile & Logout */}
           <div className="flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-800">
             <div className="w-8 h-8 rounded-full bg-[#00685f] text-white flex items-center justify-center font-bold text-xs shadow-xs">

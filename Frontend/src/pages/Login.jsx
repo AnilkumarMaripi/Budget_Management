@@ -314,43 +314,6 @@ export default function Login({ defaultTab = 'signin' }) {
                 </span>
                 <span>{darkMode ? 'Light' : 'Dark'}</span>
               </button>
-
-              {/* Automatic Location-Based Currency Selector Dropdown */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsCurrencyOpen(prev => !prev)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#1e2326] backdrop-blur-md border border-gray-200 dark:border-gray-700 text-xs font-bold text-[#00685f] dark:text-[#6bd8cb] shadow-sm hover:scale-105 transition-all cursor-pointer"
-                >
-                  <span className="text-sm">{selectedCurrency.flag}</span>
-                  <span>{selectedCurrency.code} ({selectedCurrency.symbol})</span>
-                  <span className="material-symbols-outlined text-[14px]">expand_more</span>
-                </button>
-
-                {isCurrencyOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1e2326] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-1.5 z-50 animate-fadeIn max-h-60 overflow-y-auto">
-                    <div className="px-3 py-1 text-[0.65rem] font-bold text-[#565e74] dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
-                      Auto-Detected & World Currencies
-                    </div>
-                    {SUPPORTED_CURRENCIES.map(c => (
-                      <button
-                        key={c.code}
-                        type="button"
-                        onClick={() => handleCurrencyChange(c)}
-                        className={`w-full text-left px-3 py-2 text-xs font-semibold flex items-center justify-between hover:bg-[#f2f4f6] dark:hover:bg-[#262b2f] transition-colors ${
-                          selectedCurrency.code === c.code ? 'text-[#00685f] dark:text-[#6bd8cb] font-bold bg-[#f4fffc] dark:bg-[#005049]/30' : 'text-[#191c1e] dark:text-white'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span>{c.flag}</span>
-                          <span>{c.name}</span>
-                        </span>
-                        <span className="font-mono text-[11px] font-bold text-gray-400">{c.symbol}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
           </header>
 
